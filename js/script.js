@@ -35,6 +35,9 @@ window.addEventListener('DOMContentLoaded', () => {
 
             trigger.remove();
 
+            showConfirm();
+            calcGoods(1);
+
             removeBtn.classList.add('goods__item-remove');
             removeBtn.innerHTML = '&times';
             item.appendChild(removeBtn);
@@ -42,7 +45,80 @@ window.addEventListener('DOMContentLoaded', () => {
             cartWrapper.appendChild(item);
 
             if (empty) empty.remove();
+
+            calcTotal();
+            removeFromCart();
         });
     });
+
+    function sliceTitle() {
+        titles.forEach((e) => {
+            if ( e.textContent.length < 70 ) {
+                return;
+            } else {
+                const 
+                    str = e.textContent.slice(0, 71) + '...';
+                e.textContent = str;
+            }
+        });
+    }
     
+    sliceTitle();
+
+    function showConfirm() {
+        confirm.style.display = 'block';
+        let 
+            counter = 100;
+
+        const 
+            id = setInterval(frame, 10);
+
+        function frame() {
+            if (counter === 10) {
+                clearInterval(id);
+                confirm.style.display = 'none';
+            } else {
+                counter--;
+                confirm.style.transform = `translateY(-${counter}px)`;
+                confirm.style.opacity = '.' + counter;
+            }
+        }
+    }
+
+    function calcGoods(i) {
+        const
+            items = cartWrapper.querySelectorAll('.goods__item');
+
+        badge.textContent = i + items.length;
+
+        if ( !(i + items.length) )
+            cartWrapper.innerHTML = '<div class="empty">Ваша корзина пока пуста</div>';
+    }
+
+    function calcTotal() {
+        const
+            prices = document.querySelectorAll('.cart__wrapper > .goods__item > .goods__price > span');
+
+        let
+            total = 0;
+
+        prices.forEach( (e) => {
+            total += +e.textContent;
+        });
+
+        totalCost.textContent = total;
+    }
+
+    function removeFromCart() {
+        const
+            removeBtn = cartWrapper.querySelectorAll('.goods__item-remove');
+        
+        removeBtn.forEach( (e) => {
+            e.addEventListener('click', () => {
+                e.parentElement.remove();
+                calcGoods(0);
+                calcTotal();
+            });
+        });
+    }
 });
